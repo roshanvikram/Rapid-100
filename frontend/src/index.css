@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  /* Core Brand Colors */
+  --color-bg-deep: #050505;
+  --color-bg-surface: #0a0f1c;
+
+  --color-primary: #3b82f6;
+  /* Blue 500 */
+  --color-primary-glow: rgba(59, 130, 246, 0.5);
+
+  --color-accent: #8b5cf6;
+  /* Violet 500 */
+  --color-accent-glow: rgba(139, 92, 246, 0.5);
+
+  --color-danger: #ef4444;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+
+  /* Glassmorphism settings */
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(20, 25, 40, 0.75);
+  --glass-blur: 12px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-deep);
+    color: #ffffff;
+    font-family: 'Exo 2', sans-serif;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+  }
+
+  /* Custom Professional Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #020202;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+    border: 2px solid #020202;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+}
+
+@layer components {
+
+  /* THE Glass Card */
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: var(--glass-border);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Neon Glow Text */
+  .text-neon-blue {
+    text-shadow: 0 0 10px var(--color-primary-glow);
+  }
+
+  .text-neon-red {
+    text-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  }
+
+  /* Animated Borders via pseudo-elements */
+  .neon-border-box {
+    position: relative;
+    background: var(--color-bg-surface);
+    border-radius: 12px;
+    z-index: 1;
+  }
+
+  .neon-border-box::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    background: linear-gradient(45deg, var(--color-primary), var(--color-accent), var(--color-danger));
+    border-radius: 13px;
+    opacity: 0.3;
+    filter: blur(8px);
+    transition: opacity 0.3s;
+  }
+
+  .neon-border-box:hover::before {
+    opacity: 0.6;
+  }
+}
+
+@layer utilities {
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .animate-slow-spin {
+    animation: spin 8s linear infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+}
+
+/* Keyframes */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
