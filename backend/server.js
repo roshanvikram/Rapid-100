@@ -5,6 +5,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const socketHandler = require('./src/events/socketHandler');
+const connectDB = require('./src/config/db');
 
 const app = express();
 app.use(cors());
@@ -20,7 +21,11 @@ const io = new Server(server, {
 
 // Initialize Socket Layer
 // Initialize Socket Layer
+// Initialize Socket Layer
 socketHandler(io);
+
+// Connect to MongoDB
+connectDB();
 
 // File Upload Middleware
 const multer = require('multer');
@@ -29,6 +34,7 @@ const LLMService = require('./src/services/LLMService');
 const CallIntelligenceState = require('./src/models/CallState');
 const ReasoningEngine = require('./src/core/reasoning');
 const AugmentationEngine = require('./src/ai/augmentationEngine/AugmentationEngine');
+const AnalysisResult = require('./src/models/AnalysisResult');
 
 // Helper: Extract caller identity from transcript (multilingual Indian support)
 function extractCallerIdentity(transcript) {
@@ -73,7 +79,7 @@ function extractCallerIdentity(transcript) {
         const match = transcript.match(pattern);
         if (match && match[1]) {
             const word = match[1].toLowerCase();
-            const skip = ['calling','here','at','in','on','the','a','not','so','very','really','just','going','trying','looking','having','being','doing','hai','hain','hu','hoon','bol','baat'];
+            const skip = ['calling', 'here', 'at', 'in', 'on', 'the', 'a', 'not', 'so', 'very', 'really', 'just', 'going', 'trying', 'looking', 'having', 'being', 'doing', 'hai', 'hain', 'hu', 'hoon', 'bol', 'baat'];
             if (!skip.includes(word) && word.length > 1) {
                 return match[1].charAt(0).toUpperCase() + match[1].slice(1);
             }
@@ -238,6 +244,21 @@ app.post('/analyze', upload.single('audio'), async (req, res) => {
             console.log(`[API] No API key, running full simulation...`);
             responsePayload.transcript = "Simulation: Emergency call received. Caller reports urgent situation requiring immediate dispatch.";
             responsePayload.analysis = runSimulationAnalysis(responsePayload.transcript);
+        }
+
+
+        // Save to MongoDB (Flattened)
+        try {
+            const flatAnalysis = {
+                transcript: responsePayload.transcript,
+                ...responsePayload.analysis
+            };
+
+            const analysisResult = new AnalysisResult(flatAnalysis);
+            await analysisResult.save();
+            console.log("[API] Analysis saved to MongoDB (Flat Structure)");
+        } catch (dbError) {
+            console.error("[API] Failed to save analysis to MongoDB:", dbError.message);
         }
 
         console.log("[API] Analysis Success");
